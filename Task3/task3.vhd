@@ -7,21 +7,21 @@ port(
     clk : in std_logic;
     rst : in std_logic;
 
-    rt1,rdy1,start1,endd1 :                out std_logic; -- case 1 
-    er2 :                                  out std_logic; -- case 2
-    er3, rdy3 :                            out std_logic; -- case 3
-    rdy4,start4 :                          out std_logic; -- case 4
-    endd5,stop5,er5,rdy5,start5 :          out std_logic; -- case 5
-    endd6,stop6,er6,rdy6 :                 out std_logic; -- case 6 
-    endd7,start7,status_valid7,instartsv7 : out std_logic; -- case 7
-    rt8,enable8 :                          out std_logic; -- case 8
-    rdy9,start9,interrupt9 :               out std_logic; -- case 9
-    ack10,req10 :                          out std_logic  -- case 10
+    rt1,rdy1,start1,endd1,help1 :                out std_logic; -- case 1 
+    er2 :                                  	 out std_logic; -- case 2
+    er3, rdy3 :                            	 out std_logic; -- case 3
+    rdy4,start4 :                          	 out std_logic; -- case 4
+    endd5,stop5,er5,rdy5,start5 :          	 out std_logic; -- case 5
+    endd6,stop6,er6,rdy6 :                 	 out std_logic; -- case 6 
+    endd7,start7,status_valid7,instartsv7 : 	 out std_logic; -- case 7
+    rt8,enable8 :                          	 out std_logic; -- case 8
+    rdy9,start9,interrupt9 :               	 out std_logic; -- case 9
+    ack10,req10 :                          	 out std_logic  -- case 10
 );
 end entity counter;
 
 architecture rtl of counter is 
-    signal count : std_logic_vector(15 downto 0);
+    signal count : integer range 0 to 15;
 begin 
 
 counter: process(clk,rst)
@@ -30,18 +30,24 @@ begin
         if(rst = '1') then 
             count <= 0;
         else 
-            count <= count + std_logic_vector(to_unsigned(1));
+            count <= count + 1;
         end if;
     end if;            
 
 end process;
 
 -- Case 1 
-if((count < 4) or (count = 8)) then 
-    rt1 <= '1';
+rt1 <= '1' when (count < 4) or (count = 8) else 
+       '0';
+
+if1 : process(count)
+begin
+if(count < 5) then 
+	help1 <= '1';
 else 
-    rt1 <= '0';
+	help1 <= '0';	
 end if;
+end process;
 
 rdy1 <= '1' when (count = 5) else 
         '0';
@@ -53,7 +59,7 @@ endd1 <= '1' when (count = 6) else
         '0';
 
 -- Case 2
-er2 <= '1' when (count >= 1 and count < 3) or (count >= 6 and count < 10) else 
+er2 <= '1' when (count >= 1 and count < 3) or (count >= 6 and count < 9) else 
        '0';
 
 -- Case 3
@@ -83,7 +89,7 @@ rdy5 <= '1' when (count >= 1 and count < 3) or (count >= 8 and count < 11) else
        '0';
 
 start5 <= '1' when (count = 8) else 
-        0';
+          '0';
 
 -- Case 6
 endd6 <= '1' when (count = 2) else 
